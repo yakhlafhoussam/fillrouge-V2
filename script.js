@@ -1,137 +1,259 @@
-
 (function () {
     // ---------- DATES ----------
     const targetDate = new Date(2026, 4, 5, 0, 0, 0);
     const seasonStart = new Date(2025, 9, 7, 0, 0, 0);
     const seasonEnd = new Date(2026, 4, 5, 0, 0, 0);
 
-    const mainDiv = document.getElementById('mainUI');
-    const finalDiv = document.getElementById('finalUI');
-    const daysSpan = document.getElementById('days');
-    const hoursSpan = document.getElementById('hours');
-    const minutesSpan = document.getElementById('minutes');
-    const secondsSpan = document.getElementById('seconds');
+    // DOM Elements
+    const selectionScreen = document.getElementById('selectionScreen');
+    const galleryScreen = document.getElementById('galleryScreen');
+    const finalUI = document.getElementById('finalUI');
+    const backToClassesBtn = document.getElementById('backToClassesBtn');
+    const classesGrid = document.getElementById('classesGrid');
+    const classesCountSpan = document.getElementById('classesCount');
+    const classBadgeSpan = document.getElementById('classBadge');
+    const classFooterSpan = document.getElementById('classFooterSpan');
+    const selectedClassNameSpan = document.getElementById('selectedClassName');
+    const memberCountSpan = document.getElementById('memberCountSpan');
+
+    // Gallery elements
     const learnerSpan = document.getElementById('learnerMessage');
     const pointsValueSpan = document.getElementById('pointsValue');
     const roleDisplaySpan = document.getElementById('roleDisplay');
     const studentImagesContainer = document.getElementById('studentImagesContainer');
-    const classBadgeSpan = document.getElementById('classBadge');
-    const classFooterSpan = document.getElementById('classFooterSpan');
-    const memberCountSpan = document.getElementById('memberCountSpan');
+    const daysSpan = document.getElementById('days');
+    const hoursSpan = document.getElementById('hours');
+    const minutesSpan = document.getElementById('minutes');
+    const secondsSpan = document.getElementById('seconds');
 
     const progressFill = document.getElementById('progressFill');
     const progressPercentage = document.getElementById('progressPercentage');
     const circumference = 2 * Math.PI * 45;
 
-    // Unified array: each person = { name, photoUrl, points, role, username? }
-    let allMembers = [];        // students + staff combined
+    let allClasses = [];
+    let currentMembers = [];
     let currentIndex = 0;
     let imageElements = [];
     let rotationInterval = null;
     let timerInterval = null;
+    let currentSelectedClass = '';
 
     function buildPhotoUrl(photoPath) {
         if (!photoPath) return null;
         if (photoPath.startsWith('http://') || photoPath.startsWith('https://') || photoPath.startsWith('//')) {
             return photoPath;
         }
-        // if photo is just filename, use intranet base
         return `https://intranet.youcode.ma/storage/users/profile/${photoPath}`;
     }
 
-    async function fetchClassData() {
+    // Fetch all classes
+    async function fetchAllClasses() {
         try {
-            const apiUrl = "https://youcode-extranet-production.up.railway.app/api/classes/GryffindorElites?_v=11";
-            const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const jsonData = await response.json();
-            const classInfo = jsonData.class;
-            if (!classInfo) throw new Error("Invalid API structure");
+            const apiUrl = "https://youcode-extranet-production.up.railway.app/api/classes?campus_id=6956cafb7b4b4bf2370ac677&user_type_id=6956caf17b4b4bf2370ac673&_v=11";
 
-            const className = classInfo.name || "GryffindorElites";
-            const campusName = classInfo.campus?.name || "Safi";
-            const levelName = classInfo.level?.name || "1st Year";
-            classBadgeSpan.innerHTML = `${className} · ${campusName} · ${levelName}`;
-            classFooterSpan.innerText = className;
+            const proxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
+                apiUrl
+            ];
 
-            // Process STUDENTS (with points)
-            const rawStudents = classInfo.students || [];
-            const studentsList = rawStudents.map(s => ({
-                name: s.name || "Anonymous",
-                photoUrl: s.photo ? buildPhotoUrl(s.photo) : null,
-                points: s.points !== undefined && s.points !== null ? s.points : 0,
-                role: "student",
-                pointsVariation: s.pointsVariation || 0
-            }));
-
-            // Process STAFF (staff array from API)
-            const rawStaff = classInfo.staff || [];
-            const staffList = rawStaff.map(st => ({
-                name: st.name || "Staff Member",
-                photoUrl: st.photo ? buildPhotoUrl(st.photo) : null,
-                points: st.points !== undefined && st.points !== null ? st.points : null,
-                role: "staff",
-                pointsVariation: st.pointsVariation || 0
-            }));
-
-            // Combine: staff first (mentors/leaders) then students, but keep order for gallery
-            allMembers = [...staffList, ...studentsList];
-
-            if (allMembers.length === 0) {
-                // fallback in case of empty API
-                allMembers = [{ name: "Gryffindor Elite", photoUrl: null, points: 0, role: "student" }];
+            let data = null;
+            for (const proxyUrl of proxies) {
+                try {
+                    const response = await fetch(proxyUrl, { cache: 'no-store' });
+                    if (response.ok) {
+                        data = await response.json();
+                        break;
+                    }
+                } catch (err) {
+                    console.warn(`Failed with ${proxyUrl}:`, err);
+                    continue;
+                }
             }
 
-            // update footer count
-            memberCountSpan.innerText = `${allMembers.length} members (${staffList.length} staff, ${studentsList.length} students)`;
+            if (!data || !data.classes) {
+                throw new Error("Failed to fetch classes");
+            }
 
-            buildGalleryFromMembers();
-            startRotation();
+            allClasses = data.classes;
+            displayClasses();
+            classBadgeSpan.innerHTML = `📚 ${allClasses.length} Classes · Safi Campus`;
             return true;
         } catch (err) {
-            console.error("API fetch error:", err);
-            classBadgeSpan.innerHTML = `GryffindorElites · Live mode (fallback)`;
-            // fallback data containing staff + students with points (based on previous structure but enriched)
-            allMembers = [
-                { name: "Prof. Mohamed Yassine Bahajou", photoUrl: "https://intranet.youcode.ma/storage/users/profile/28-1665941748.jpg", points: 1250, role: "staff" },
-                { name: "Khadija Abirat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1519-1760996184.png", points: 447, role: "LEARNER" },
-                { name: "Yassin Maftah", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1877-1760996507.png", points: 438, role: "LEARNER" },
-                { name: "Zakarya Hari", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1684-1760996356.png", points: 434, role: "LEARNER" },
-                { name: "Nourelhouda Tajat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1680-1760996352.png", points: 411, role: "LEARNER" },
-                { name: "Mohammed Mehdi Saibat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1733-1760996421.png", points: 397, role: "LEARNER" },
-                { name: "Oussama Kara", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1531-1760996202.png", points: 388, role: "LEARNER" },
-                { name: "Salma Jaddar", photoUrl: "https://intranet.youcode.ma/storage/users/profile/2044-1760996596.png", points: 338, role: "LEARNER" },
-                { name: "Larbi Loubi", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1779-1760996465.png", points: 337, role: "LEARNER" },
-                { name: "Ilias El Garch", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1657-1760996328.png", points: 320, role: "LEARNER" },
-                { name: "ahmed oubelkacem", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1662-1760996330.png", points: 314, role: "LEARNER" },
-                { name: "Sahhouti Amine", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1550-1760996249.png", points: 312, role: "LEARNER" },
-                { name: "Ilyas Bahsi", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1452-1760996174.png", points: 263, role: "LEARNER" },
-                { name: "Adnane Qnais", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1895-1760996530.png", points: 259, role: "LEARNER" },
-                { name: "Rihab Sabri", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1671-1760996340.png", points: 250, role: "LEARNER" },
-                { name: "Zakaria Dachi", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1738-1760996428.png", points: 230, role: "LEARNER" },
-                { name: "Ayoub Elkhadir", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1727-1760996409.png", points: 221, role: "LEARNER" },
-                { name: "Noha Kasmi", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1866-1760996491.png", points: 86 }
+            console.error("Error fetching classes:", err);
+            classBadgeSpan.innerHTML = `⚠️ Using demo classes`;
+
+            // Fallback classes
+            allClasses = [
+                { name: "GryffindorElites", studentCount: 17, image: "https://intranet.youcode.ma/storage/classrooms/146-1759851626.jpg", staff: [{ name: "Mohamed Yassine Bahajou", photo: "28-1665941748.jpg" }] },
+                { name: "DebuGGers", studentCount: 23, image: "https://intranet.youcode.ma/storage/classrooms/0.jpeg", staff: [{ name: "Saad HAIMEUR", photo: null }] },
+                { name: "GenZDevs", studentCount: 23, image: "https://intranet.youcode.ma/storage/classrooms/151-1770624273.jpg", staff: [{ name: "Abdeladim Abid", photo: "16-1773227461.png" }] },
+                { name: "NextLine 2025-2026", studentCount: 24, image: "https://intranet.youcode.ma/storage/classrooms/0.jpeg", staff: [{ name: "Achraf Chaoub", photo: "34-1669653739.jpg" }] },
+                { name: "SaiyansCoders", studentCount: 22, image: "https://intranet.youcode.ma/storage/classrooms/147-1759924167.png", staff: [{ name: "Houssni OUCHAD", photo: "1008-1709580550.jpg" }] }
             ];
-            buildGalleryFromMembers();
-            startRotation();
+            displayClasses();
             return false;
         }
+    }
+
+    function displayClasses() {
+        classesGrid.innerHTML = '';
+        allClasses.forEach(cls => {
+            const card = document.createElement('div');
+            card.className = 'class-card';
+            card.onclick = () => selectClass(cls.name);
+            card.innerHTML = `
+            <div class="flex items-center gap-4 mb-3">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-xl">
+                ${cls.name.charAt(0)}
+              </div>
+              <div class="flex-1">
+                <h3 class="text-white font-bold text-lg">${cls.name}</h3>
+                <p class="text-gray-400 text-sm">🎓 ${cls.studentCount} students</p>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gray-700/50">
+              <p class="text-blue-400 text-xs">👥 Staff: ${cls.staff?.[0]?.name || 'Loading...'}</p>
+            </div>
+          `;
+            classesGrid.appendChild(card);
+        });
+        classesCountSpan.innerText = `${allClasses.length} classes available. Click any class to view members.`;
+    }
+
+    // Fetch specific class details
+    async function fetchClassDetails(className) {
+        try {
+            const apiUrl = `https://youcode-extranet-production.up.railway.app/api/classes/${encodeURIComponent(className)}?_v=11`;
+
+            const proxies = [
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`,
+                apiUrl
+            ];
+
+            let classData = null;
+            for (const proxyUrl of proxies) {
+                try {
+                    const response = await fetch(proxyUrl, { cache: 'no-store' });
+                    if (response.ok) {
+                        classData = await response.json();
+                        break;
+                    }
+                } catch (err) {
+                    continue;
+                }
+            }
+
+            if (!classData || !classData.class) {
+                throw new Error("Failed to fetch class details");
+            }
+
+            return classData.class;
+        } catch (err) {
+            console.error("Error fetching class details:", err);
+            return null;
+        }
+    }
+
+    // Load and display selected class
+    async function selectClass(className) {
+        currentSelectedClass = className;
+
+        // Show loading state in gallery
+        selectionScreen.classList.add('hidden');
+        galleryScreen.classList.remove('hidden');
+        backToClassesBtn.classList.remove('hidden');
+
+        learnerSpan.innerText = "Loading class data...";
+        studentImagesContainer.innerHTML = '<div class="loader-mini"></div>';
+        selectedClassNameSpan.innerText = className;
+        classFooterSpan.innerText = className;
+
+        const classInfo = await fetchClassDetails(className);
+
+        if (!classInfo) {
+            useFallbackData(className);
+            return;
+        }
+
+        const campusName = classInfo.campus?.name || "Safi";
+        const levelName = classInfo.level?.name || "1st Year";
+        classBadgeSpan.innerHTML = `${className} · ${campusName} · ${levelName}`;
+
+        // Process STUDENTS
+        const rawStudents = classInfo.students || [];
+        const studentsList = rawStudents.map(s => ({
+            name: s.name || "Anonymous",
+            photoUrl: s.photo ? buildPhotoUrl(s.photo) : null,
+            points: s.points !== undefined && s.points !== null ? s.points : 0,
+            role: "student",
+            pointsVariation: s.pointsVariation || 0
+        }));
+
+        // Process STAFF
+        const rawStaff = classInfo.staff || [];
+        const staffList = rawStaff.map(st => ({
+            name: st.name || "Staff Member",
+            photoUrl: st.photo ? buildPhotoUrl(st.photo) : null,
+            points: st.points !== undefined && st.points !== null ? st.points : null,
+            role: "staff",
+            pointsVariation: st.pointsVariation || 0
+        }));
+
+        currentMembers = [...staffList, ...studentsList];
+
+        if (currentMembers.length === 0) {
+            currentMembers = [{ name: "No members found", photoUrl: null, points: 0, role: "student" }];
+        }
+
+        memberCountSpan.innerText = `${currentMembers.length} members (${staffList.length} staff, ${studentsList.length} students)`;
+
+        buildGalleryFromMembers();
+        startRotation();
+    }
+
+    function useFallbackData(className) {
+        const fallbackData = {
+            "GryffindorElites": [
+                { name: "Prof. Mohamed Yassine Bahajou", photoUrl: "https://intranet.youcode.ma/storage/users/profile/28-1665941748.jpg", points: null, role: "staff" },
+                { name: "Khadija Abirat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1519-1760996184.png", points: 447, role: "student" },
+                { name: "Yassin Maftah", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1877-1760996507.png", points: 438, role: "student" },
+                { name: "Zakarya Hari", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1684-1760996356.png", points: 434, role: "student" },
+                { name: "Nourelhouda Tajat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1680-1760996352.png", points: 411, role: "student" }
+            ],
+            "DebuGGers": [
+                { name: "Saad HAIMEUR", photoUrl: null, points: null, role: "staff" }
+            ],
+            "GenZDevs": [
+                { name: "Abdeladim Abid", photoUrl: "https://intranet.youcode.ma/storage/users/profile/16-1773227461.png", points: null, role: "staff" }
+            ]
+        };
+
+        currentMembers = fallbackData[className] || [
+            { name: className, photoUrl: null, points: 0, role: "student" }
+        ];
+
+        memberCountSpan.innerText = `${currentMembers.length} members`;
+        classBadgeSpan.innerHTML = `${className} · Demo Mode`;
+
+        buildGalleryFromMembers();
+        startRotation();
     }
 
     function buildGalleryFromMembers() {
         studentImagesContainer.innerHTML = '';
         imageElements = [];
 
-        if (!allMembers.length) return;
+        if (!currentMembers.length) return;
 
-        allMembers.forEach((member, idx) => {
+        currentMembers.forEach((member, idx) => {
             const img = document.createElement('img');
             img.id = `member_img_${idx}`;
-            const defaultAvatar = `https://ui-avatars.com/api/?background=1f2a3a&color=5f9eff&bold=true&size=150&name=${encodeURIComponent(member.name.charAt(0))}`;
+            const defaultAvatar = `https://ui-avatars.com/api/?background=1f2a3a&color=5f9eff&bold=true&size=150&name=${encodeURIComponent(member.name?.charAt(0) || '?')}`;
             img.src = (member.photoUrl && member.photoUrl.trim() !== "") ? member.photoUrl : defaultAvatar;
             img.alt = member.name;
             img.className = 'student-img';
-            img.setAttribute('data-member-idx', idx);
             img.onerror = function () {
                 this.src = `https://ui-avatars.com/api/?background=132235&color=8bbaff&bold=true&size=150&name=${encodeURIComponent(member.name?.charAt(0) || '?')}`;
             };
@@ -140,6 +262,7 @@
         });
 
         if (imageElements.length > 0) {
+            currentIndex = 0;
             showMemberByIndex(0);
             updateInfoPanel(0);
         }
@@ -153,44 +276,41 @@
     }
 
     function updateInfoPanel(index) {
-        const member = allMembers[index];
+        const member = currentMembers[index];
         if (!member) return;
         learnerSpan.innerText = member.name;
 
-        // points display: staff might have null points, treat as "—"
         if (member.role === "staff" && (member.points === null || member.points === undefined)) {
             pointsValueSpan.innerText = "STAFF";
-            pointsValueSpan.parentElement.style.opacity = "0.8";
+            pointsValueSpan.parentElement.classList.add('staff-badge');
         } else {
             const pts = member.points !== undefined && member.points !== null ? member.points : 0;
             pointsValueSpan.innerText = pts;
-            pointsValueSpan.parentElement.style.opacity = "1";
+            if (member.role === "staff") pointsValueSpan.parentElement.classList.add('staff-badge');
+            else pointsValueSpan.parentElement.classList.remove('staff-badge');
         }
 
-        // role display with style
         if (member.role === "staff") {
             roleDisplaySpan.innerHTML = "⚜️ STAFF · MENTOR";
             roleDisplaySpan.classList.add("bg-blue-900/60", "text-blue-200");
             roleDisplaySpan.classList.remove("bg-[#2d4670]");
-            document.querySelector('.points-badge')?.classList.add('staff-badge');
         } else {
             roleDisplaySpan.innerHTML = "🎓 LEARNER";
             roleDisplaySpan.classList.remove("bg-blue-900/60", "text-blue-200");
             roleDisplaySpan.classList.add("bg-[#2d4670]");
-            document.querySelector('.points-badge')?.classList.remove('staff-badge');
         }
     }
 
     function rotateToNext() {
-        if (!allMembers.length) return;
-        currentIndex = (currentIndex + 1) % allMembers.length;
+        if (!currentMembers.length) return;
+        currentIndex = (currentIndex + 1) % currentMembers.length;
         showMemberByIndex(currentIndex);
         updateInfoPanel(currentIndex);
     }
 
     function startRotation() {
         if (rotationInterval) clearInterval(rotationInterval);
-        if (allMembers.length) {
+        if (currentMembers.length) {
             currentIndex = 0;
             showMemberByIndex(0);
             updateInfoPanel(0);
@@ -200,6 +320,25 @@
                 }
             }, 3200);
         }
+    }
+
+    function stopRotation() {
+        if (rotationInterval) {
+            clearInterval(rotationInterval);
+            rotationInterval = null;
+        }
+    }
+
+    function goBackToClasses() {
+        stopRotation();
+        selectionScreen.classList.remove('hidden');
+        galleryScreen.classList.add('hidden');
+        backToClassesBtn.classList.add('hidden');
+        finalUI.classList.add('hidden');
+        mainDiv.classList.remove('hidden');
+        classBadgeSpan.innerHTML = `📚 ${allClasses.length} Classes · Safi Campus`;
+        classFooterSpan.innerText = "Select a class";
+        memberCountSpan.innerText = "0 members";
     }
 
     // Countdown logic
@@ -220,18 +359,25 @@
     }
 
     function showFinalScreen() {
-        if (mainDiv.classList.contains('hidden')) return;
-        mainDiv.classList.add('hidden');
-        finalDiv.classList.remove('hidden');
-        finalDiv.innerHTML = `
+        if (galleryScreen.classList.contains('hidden')) return;
+        galleryScreen.classList.add('hidden');
+        finalUI.classList.remove('hidden');
+        finalUI.innerHTML = `
           <div class="final-elegant">
             <span class="text-7xl block mb-5">🌑</span>
             <h2 class="text-5xl md:text-7xl font-bold text-white">Fil Noir</h2>
             <p class="text-3xl text-blue-400 mt-2">ARRIVED</p>
             <p class="text-gray-400 mt-6 text-xl border-t border-blue-900/50 pt-6">may 5, 2026 · the moment is now</p>
-            <div class="mt-8 text-blue-300/50 text-sm tracking-widest">GryffindorElites · Points sealed</div>
+            <div class="mt-8 text-blue-300/50 text-sm tracking-widest">Points sealed · Class Gallery</div>
+            <button id="backFromFinalBtn" class="mt-6 btn-primary text-sm">← Back to Classes</button>
           </div>
         `;
+        document.getElementById('backFromFinalBtn')?.addEventListener('click', () => {
+            finalUI.classList.add('hidden');
+            selectionScreen.classList.remove('hidden');
+            backToClassesBtn.classList.add('hidden');
+            classBadgeSpan.innerHTML = `📚 ${allClasses.length} Classes · Safi Campus`;
+        });
         if (rotationInterval) clearInterval(rotationInterval);
         if (timerInterval) clearInterval(timerInterval);
     }
@@ -252,16 +398,14 @@
         progressPercentage.innerText = Math.floor(percentage);
     }
 
+    // Event Listeners
+    backToClassesBtn.addEventListener('click', goBackToClasses);
+
     async function init() {
-        await fetchClassData();   // builds allMembers (staff+students) and gallery
+        await fetchAllClasses();
 
         updateProgressCircle();
-        if (isExpired()) {
-            showFinalScreen();
-            return;
-        }
 
-        updateNumbersAndMaybeFinal();
         timerInterval = setInterval(() => {
             if (isExpired()) {
                 if (timerInterval) clearInterval(timerInterval);
@@ -272,9 +416,6 @@
                 updateProgressCircle();
             }
         }, 1000);
-
-        // ensure rotation is active (in case fetchClassData didn't start due to empty but fallback exists)
-        if (!rotationInterval && allMembers.length) startRotation();
     }
 
     init();
