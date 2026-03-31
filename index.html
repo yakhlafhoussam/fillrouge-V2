@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Fil Noir 2026 · GryffindorElites · Points & Gallery</title>
+  <!-- Tailwind + Inter refined -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0b0d17;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background-image: radial-gradient(circle at 100% 0%, #1f2b3f, #03050b 70%);
+      overflow-x: hidden;
+    }
+
+    .orb-elegant {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 20% 30%, #2b4a7a, #0e1a2b);
+      filter: blur(100px);
+      z-index: 0;
+      opacity: 0.25;
+      animation: orbMove 30s infinite alternate;
+    }
+
+    .orb-elegant.left {
+      width: 70vmax;
+      height: 70vmax;
+      left: -20%;
+      top: -20%;
+    }
+
+    .orb-elegant.right {
+      width: 60vmin;
+      height: 60vmin;
+      right: 0%;
+      bottom: 0%;
+      background: #2f2645;
+      animation-duration: 40s;
+    }
+
+    @keyframes orbMove {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(6%, -4%) scale(1.2); }
+    }
+
+    .card-refined {
+      background: rgba(12, 18, 28, 0.75);
+      backdrop-filter: blur(18px) saturate(220%);
+      -webkit-backdrop-filter: blur(18px) saturate(220%);
+      border: 1px solid rgba(90, 150, 255, 0.15);
+      border-radius: 3.5rem;
+      box-shadow: 0 40px 80px -30px #000, 0 0 0 1px #1f3d70 inset;
+      position: relative;
+      z-index: 30;
+    }
+
+    .tile-premium {
+      background: #0f1a28;
+      border-radius: 2.2rem;
+      padding: 2rem 0.2rem;
+      border: 1px solid #253549;
+      box-shadow: 0 15px 30px -20px #000;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+      text-align: center;
+    }
+
+    .tile-premium:hover {
+      border-color: #4f7eb3;
+      background: #132235;
+      transform: translateY(-6px);
+      box-shadow: 0 30px 40px -25px #1e4c9e;
+    }
+
+    .digit-clean {
+      font-size: 4.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 0 25px #3f7bc0;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .digit-label {
+      color: #99b8d4;
+      font-size: 0.8rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-top: 0.8rem;
+      font-weight: 400;
+    }
+
+    .learners-premium {
+      background: #0d1422;
+      border: 1.5px solid #2d4670;
+      border-radius: 5rem;
+      padding: 1.2rem 2rem;
+      box-shadow: 0 0 30px #1e3f6e, 0 0 0 1px #5f8fd0 inset;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      transition: box-shadow 0.3s;
+      max-width: 95%;
+      min-width: 320px;
+      position: relative;
+    }
+
+    .student-images-container {
+      position: relative;
+      width: 150px;
+      height: 150px;
+    }
+
+    .student-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 150px;
+      height: 150px;
+      border-radius: 100%;
+      object-fit: cover;
+      border: 3px solid #4f7eb3;
+      box-shadow: 0 0 30px rgba(79, 126, 179, 0.6);
+      background: #1f2a3a;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.9);
+    }
+
+    .student-img.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+    }
+
+    .student-img:hover {
+      transform: scale(1.05);
+      border-color: #8bbaff;
+    }
+
+    .learners-text-glow {
+      font-size: 1.6rem;
+      font-weight: 600;
+      background: linear-gradient(145deg, #ffffff, #b8d4ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      filter: drop-shadow(0 0 20px #5f9eff);
+      text-align: center;
+    }
+
+    .points-badge {
+      background: linear-gradient(135deg, #1e2a3a, #0f1722);
+      border-radius: 40px;
+      padding: 0.3rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #ffd966;
+      border: 1px solid #ffb34740;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .staff-badge {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: #3b82f6;
+      color: #90caf9;
+    }
+
+    .role-tag {
+      font-size: 0.7rem;
+      background: #2d4670;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .progress-circle-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      width: 80px;
+      height: 80px;
+    }
+
+    .progress-circle {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+
+    .progress-circle-bg {
+      fill: none;
+      stroke: #1f2a3a;
+      stroke-width: 6;
+    }
+
+    .progress-circle-fill {
+      fill: none;
+      stroke: url(#gradient);
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.5s ease;
+    }
+
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 0 10px #3f7bc0;
+    }
+
+    .progress-label {
+      font-size: 0.7rem;
+      color: #99b8d4;
+      letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 640px) {
+      .learners-premium {
+        padding: 0.8rem 1.2rem;
+        gap: 1rem;
+        border-radius: 3rem;
+        min-width: 260px;
+      }
+      .student-images-container {
+        width: 100px;
+        height: 100px;
+      }
+      .student-img {
+        width: 100px;
+        height: 100px;
+      }
+      .learners-text-glow {
+        font-size: 1rem;
+        white-space: normal;
+        text-align: center;
+      }
+      .digit-clean { font-size: 3.2rem; }
+      .card-refined { border-radius: 2.5rem; padding: 1.5rem; }
+      .progress-circle-container { width: 60px; height: 60px; top: 10px; right: 10px; }
+      .progress-text { font-size: 0.9rem; }
+      .points-badge { font-size: 0.7rem; padding: 0.2rem 0.7rem; }
+    }
+
+    .hyk-sleek {
+      font-weight: 300;
+      font-size: 1.5rem;
+      letter-spacing: 0.6rem;
+      background: linear-gradient(145deg, #b0d0ff, #ffffff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      border-left: 3px solid #3b82f6;
+      padding-left: 1.2rem;
+    }
+
+    .final-elegant {
+      background: #0d1727;
+      border-radius: 4rem;
+      padding: 3.5rem 4rem;
+      border: 1px solid #3f6a9e;
+      box-shadow: 0 0 100px #1b3a5f;
+      text-align: center;
+      animation: fadeFinal 1s ease;
+    }
+
+    @keyframes fadeFinal {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .footer-sleek {
+      border-top: 1px solid #1e2f40;
+      color: #7189a6;
+    }
+
+    .appear-smooth {
+      animation: appear 1.5s ease forwards;
+    }
+
+    @keyframes appear {
+      0% { opacity: 0; transform: translateY(25px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    *::-webkit-scrollbar { display: none; }
+    * { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .loader-mini {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #2d4670;
+      border-top: 4px solid #5f9eff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 1rem auto;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+
+<body>
+
+  <div class="orb-elegant left"></div>
+  <div class="orb-elegant right"></div>
+
+  <div class="progress-circle-container">
+    <svg class="progress-circle" viewBox="0 0 100 100">
+      <defs>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#3b82f6" />
+          <stop offset="100%" stop-color="#8bbaff" />
+        </linearGradient>
+      </defs>
+      <circle class="progress-circle-bg" cx="50" cy="50" r="45" />
+      <circle class="progress-circle-fill" id="progressFill" cx="50" cy="50" r="45" stroke-dasharray="0, 282.74" />
+    </svg>
+    <div class="progress-text">
+      <span id="progressPercentage">0</span><span>%</span>
+      <div class="progress-label">SEASON</div>
+    </div>
+  </div>
+
+  <div class="relative z-40 w-full max-w-5xl p-5 appear-smooth">
+    <div class="card-refined p-9 md:p-13 lg:p-14">
+
+      <div class="flex flex-wrap items-center justify-between gap-5 mb-10">
+        <span id="classBadge"
+          class="text-xs font-medium text-blue-400/70 tracking-[0.3em] bg-[#101b2b] px-6 py-3 rounded-full border border-blue-900/50 uppercase">
+          <span class="inline-block loader-mini w-4 h-4 border-2 mr-2 align-middle"></span> Loading GryffindorElites...
+        </span>
+        <div class="flex items-center gap-5">
+          <span class="text-sm text-blue-400/40">Crafted by</span>
+          <span class="hyk-sleek">HYK</span>
+        </div>
+      </div>
+
+      <div id="mainUI">
+        <div class="text-center">
+          <h1 class="text-5xl md:text-7xl font-bold text-white tracking-tight">Fil Noir <span class="text-blue-400 font-light">2026</span></h1>
+          <p class="text-gray-400 mt-3 text-base md:text-lg">The dark day · May 5</p>
+        </div>
+
+        <div class="flex justify-center my-10">
+          <div class="learners-premium" id="learnerContainer">
+            <div class="student-images-container" id="studentImagesContainer"></div>
+            <div class="text-center">
+              <span class="learners-text-glow" id="learnerMessage">— gathering wizards —</span>
+              <div id="pointsDisplay" class="points-badge mt-2"><span>⭐</span> <span id="pointsValue">--</span> pts</div>
+              <div id="roleDisplay" class="role-tag mt-1 text-[10px] uppercase tracking-wider">Learner</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-7 mt-8">
+          <div class="tile-premium"><span class="digit-clean" id="days">00</span><span class="digit-label">DAYS</span></div>
+          <div class="tile-premium"><span class="digit-clean" id="hours">00</span><span class="digit-label">HOURS</span></div>
+          <div class="tile-premium"><span class="digit-clean" id="minutes">00</span><span class="digit-label">MINUTES</span></div>
+          <div class="tile-premium"><span class="digit-clean" id="seconds">00</span><span class="digit-label">SECONDS</span></div>
+        </div>
+      </div>
+
+      <div id="finalUI" class="hidden w-full flex justify-center py-6"></div>
+
+      <div class="footer-sleek mt-14 pt-8 text-center text-sm text-gray-500 flex flex-wrap items-center justify-center gap-5">
+        <span>✦</span>
+        <span>Fil Noir · YouCode</span>
+        <span>✦</span>
+        <span id="classFooterSpan" class="text-blue-400/80">GryffindorElites</span>
+        <span>✦</span>
+        <span id="memberCountSpan" class="text-gray-400 text-xs">0 members</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // ---------- DATES ----------
+      const targetDate = new Date(2026, 4, 5, 0, 0, 0);
+      const seasonStart = new Date(2025, 9, 7, 0, 0, 0);
+      const seasonEnd = new Date(2026, 4, 5, 0, 0, 0);
+
+      const mainDiv = document.getElementById('mainUI');
+      const finalDiv = document.getElementById('finalUI');
+      const daysSpan = document.getElementById('days');
+      const hoursSpan = document.getElementById('hours');
+      const minutesSpan = document.getElementById('minutes');
+      const secondsSpan = document.getElementById('seconds');
+      const learnerSpan = document.getElementById('learnerMessage');
+      const pointsValueSpan = document.getElementById('pointsValue');
+      const roleDisplaySpan = document.getElementById('roleDisplay');
+      const studentImagesContainer = document.getElementById('studentImagesContainer');
+      const classBadgeSpan = document.getElementById('classBadge');
+      const classFooterSpan = document.getElementById('classFooterSpan');
+      const memberCountSpan = document.getElementById('memberCountSpan');
+
+      const progressFill = document.getElementById('progressFill');
+      const progressPercentage = document.getElementById('progressPercentage');
+      const circumference = 2 * Math.PI * 45;
+
+      // Unified array: each person = { name, photoUrl, points, role, username? }
+      let allMembers = [];        // students + staff combined
+      let currentIndex = 0;
+      let imageElements = [];
+      let rotationInterval = null;
+      let timerInterval = null;
+
+      function buildPhotoUrl(photoPath) {
+        if (!photoPath) return null;
+        if (photoPath.startsWith('http://') || photoPath.startsWith('https://') || photoPath.startsWith('//')) {
+          return photoPath;
+        }
+        // if photo is just filename, use intranet base
+        return `https://intranet.youcode.ma/storage/users/profile/${photoPath}`;
+      }
+
+      async function fetchClassData() {
+        try {
+          const apiUrl = "https://youcode-extranet-production.up.railway.app/api/classes/GryffindorElites?_v=11";
+          const response = await fetch(apiUrl);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const jsonData = await response.json();
+          const classInfo = jsonData.class;
+          if (!classInfo) throw new Error("Invalid API structure");
+
+          const className = classInfo.name || "GryffindorElites";
+          const campusName = classInfo.campus?.name || "Safi";
+          const levelName = classInfo.level?.name || "1st Year";
+          classBadgeSpan.innerHTML = `${className} · ${campusName} · ${levelName}`;
+          classFooterSpan.innerText = className;
+
+          // Process STUDENTS (with points)
+          const rawStudents = classInfo.students || [];
+          const studentsList = rawStudents.map(s => ({
+            name: s.name || "Anonymous",
+            photoUrl: s.photo ? buildPhotoUrl(s.photo) : null,
+            points: s.points !== undefined && s.points !== null ? s.points : 0,
+            role: "student",
+            pointsVariation: s.pointsVariation || 0
+          }));
+
+          // Process STAFF (staff array from API)
+          const rawStaff = classInfo.staff || [];
+          const staffList = rawStaff.map(st => ({
+            name: st.name || "Staff Member",
+            photoUrl: st.photo ? buildPhotoUrl(st.photo) : null,
+            points: st.points !== undefined && st.points !== null ? st.points : null,
+            role: "staff",
+            pointsVariation: st.pointsVariation || 0
+          }));
+
+          // Combine: staff first (mentors/leaders) then students, but keep order for gallery
+          allMembers = [...staffList, ...studentsList];
+          
+          if (allMembers.length === 0) {
+            // fallback in case of empty API
+            allMembers = [{ name: "Gryffindor Elite", photoUrl: null, points: 0, role: "student" }];
+          }
+
+          // update footer count
+          memberCountSpan.innerText = `${allMembers.length} members (${staffList.length} staff, ${studentsList.length} students)`;
+          
+          buildGalleryFromMembers();
+          startRotation();
+          return true;
+        } catch (err) {
+          console.error("API fetch error:", err);
+          classBadgeSpan.innerHTML = `GryffindorElites · Live mode (fallback)`;
+          // fallback data containing staff + students with points (based on previous structure but enriched)
+          allMembers = [
+            { name: "Prof. Mohamed Yassine Bahajou", photoUrl: "https://intranet.youcode.ma/storage/users/profile/28-1665941748.jpg", points: 1250, role: "staff" },
+            { name: "Khadija Abirat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1519-1760996184.png", points: 447, role: "LEARNER" },
+            { name: "Yassin Maftah", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1877-1760996507.png", points: 438, role: "LEARNER" },
+            { name: "Zakarya Hari", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1684-1760996356.png", points: 434, role: "LEARNER" },
+            { name: "Nourelhouda Tajat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1680-1760996352.png", points: 411, role: "LEARNER" },
+            { name: "Mohammed Mehdi Saibat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1733-1760996421.png", points: 397, role: "LEARNER" },
+            { name: "Oussama Kara", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1531-1760996202.png", points: 388, role: "LEARNER" },
+            { name: "Salma Jaddar", photoUrl: "https://intranet.youcode.ma/storage/users/profile/2044-1760996596.png", points: 338, role: "LEARNER" },
+            { name: "Larbi Loubi", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1779-1760996465.png", points: 337, role: "LEARNER" },
+            { name: "Ilias El Garch", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1657-1760996328.png", points: 320, role: "LEARNER" },
+            { name: "ahmed oubelkacem", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1662-1760996330.png", points: 314, role: "LEARNER" },
+            { name: "Sahhouti Amine", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1550-1760996249.png", points: 312, role: "LEARNER" },
+            { name: "Ilyas Bahsi", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1452-1760996174.png", points: 263, role: "LEARNER" },
+            { name: "Adnane Qnais", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1895-1760996530.png", points: 259, role: "LEARNER" },
+            { name: "Rihab Sabri", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1671-1760996340.png", points: 250, role: "LEARNER" },
+            { name: "Zakaria Dachi", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1738-1760996428.png", points: 230, role: "LEARNER" },
+            { name: "Ayoub Elkhadir", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1727-1760996409.png", points: 221, role: "LEARNER" },
+            { name: "Noha Kasmi", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1866-1760996491.png", points: 86 }
+            ];
+          buildGalleryFromMembers();
+          startRotation();
+          return false;
+        }
+      }
+
+      function buildGalleryFromMembers() {
+        studentImagesContainer.innerHTML = '';
+        imageElements = [];
+        
+        if (!allMembers.length) return;
+        
+        allMembers.forEach((member, idx) => {
+          const img = document.createElement('img');
+          img.id = `member_img_${idx}`;
+          const defaultAvatar = `https://ui-avatars.com/api/?background=1f2a3a&color=5f9eff&bold=true&size=150&name=${encodeURIComponent(member.name.charAt(0))}`;
+          img.src = (member.photoUrl && member.photoUrl.trim() !== "") ? member.photoUrl : defaultAvatar;
+          img.alt = member.name;
+          img.className = 'student-img';
+          img.setAttribute('data-member-idx', idx);
+          img.onerror = function() {
+            this.src = `https://ui-avatars.com/api/?background=132235&color=8bbaff&bold=true&size=150&name=${encodeURIComponent(member.name?.charAt(0) || '?')}`;
+          };
+          studentImagesContainer.appendChild(img);
+          imageElements.push(img);
+        });
+        
+        if (imageElements.length > 0) {
+          showMemberByIndex(0);
+          updateInfoPanel(0);
+        }
+      }
+      
+      function showMemberByIndex(index) {
+        if (!imageElements.length) return;
+        imageElements.forEach(img => img.classList.remove('visible'));
+        const targetImg = imageElements[index];
+        if (targetImg) targetImg.classList.add('visible');
+      }
+      
+      function updateInfoPanel(index) {
+        const member = allMembers[index];
+        if (!member) return;
+        learnerSpan.innerText = member.name;
+        
+        // points display: staff might have null points, treat as "—"
+        if (member.role === "staff" && (member.points === null || member.points === undefined)) {
+          pointsValueSpan.innerText = "STAFF";
+          pointsValueSpan.parentElement.style.opacity = "0.8";
+        } else {
+          const pts = member.points !== undefined && member.points !== null ? member.points : 0;
+          pointsValueSpan.innerText = pts;
+          pointsValueSpan.parentElement.style.opacity = "1";
+        }
+        
+        // role display with style
+        if (member.role === "staff") {
+          roleDisplaySpan.innerHTML = "⚜️ STAFF · MENTOR";
+          roleDisplaySpan.classList.add("bg-blue-900/60", "text-blue-200");
+          roleDisplaySpan.classList.remove("bg-[#2d4670]");
+          document.querySelector('.points-badge')?.classList.add('staff-badge');
+        } else {
+          roleDisplaySpan.innerHTML = "🎓 LEARNER";
+          roleDisplaySpan.classList.remove("bg-blue-900/60", "text-blue-200");
+          roleDisplaySpan.classList.add("bg-[#2d4670]");
+          document.querySelector('.points-badge')?.classList.remove('staff-badge');
+        }
+      }
+      
+      function rotateToNext() {
+        if (!allMembers.length) return;
+        currentIndex = (currentIndex + 1) % allMembers.length;
+        showMemberByIndex(currentIndex);
+        updateInfoPanel(currentIndex);
+      }
+      
+      function startRotation() {
+        if (rotationInterval) clearInterval(rotationInterval);
+        if (allMembers.length) {
+          currentIndex = 0;
+          showMemberByIndex(0);
+          updateInfoPanel(0);
+          rotationInterval = setInterval(() => {
+            if (!isExpired()) {
+              rotateToNext();
+            }
+          }, 3200);
+        }
+      }
+      
+      // Countdown logic
+      function formatTwo(n) { return n < 10 ? '0' + n : n; }
+      function isExpired() { return Date.now() >= targetDate.getTime(); }
+      
+      function updateNumbersAndMaybeFinal() {
+        if (isExpired()) {
+          showFinalScreen();
+          return true;
+        }
+        const diff = targetDate - Date.now();
+        daysSpan.innerText = formatTwo(Math.floor(diff / 86400000));
+        hoursSpan.innerText = formatTwo(Math.floor((diff % 86400000) / 3600000));
+        minutesSpan.innerText = formatTwo(Math.floor((diff % 3600000) / 60000));
+        secondsSpan.innerText = formatTwo(Math.floor((diff % 60000) / 1000));
+        return false;
+      }
+      
+      function showFinalScreen() {
+        if (mainDiv.classList.contains('hidden')) return;
+        mainDiv.classList.add('hidden');
+        finalDiv.classList.remove('hidden');
+        finalDiv.innerHTML = `
+          <div class="final-elegant">
+            <span class="text-7xl block mb-5">🌑</span>
+            <h2 class="text-5xl md:text-7xl font-bold text-white">Fil Noir</h2>
+            <p class="text-3xl text-blue-400 mt-2">ARRIVED</p>
+            <p class="text-gray-400 mt-6 text-xl border-t border-blue-900/50 pt-6">may 5, 2026 · the moment is now</p>
+            <div class="mt-8 text-blue-300/50 text-sm tracking-widest">GryffindorElites · Points sealed</div>
+          </div>
+        `;
+        if (rotationInterval) clearInterval(rotationInterval);
+        if (timerInterval) clearInterval(timerInterval);
+      }
+      
+      function calculateSeasonPercentage() {
+        const now = Date.now();
+        if (now <= seasonStart.getTime()) return 0;
+        if (now >= seasonEnd.getTime()) return 100;
+        const total = seasonEnd.getTime() - seasonStart.getTime();
+        const elapsed = now - seasonStart.getTime();
+        return Math.min(100, Math.max(0, (elapsed / total) * 100));
+      }
+      
+      function updateProgressCircle() {
+        const percentage = calculateSeasonPercentage();
+        const dashLength = (percentage / 100) * circumference;
+        progressFill.setAttribute('stroke-dasharray', `${dashLength}, ${circumference}`);
+        progressPercentage.innerText = Math.floor(percentage);
+      }
+      
+      async function init() {
+        await fetchClassData();   // builds allMembers (staff+students) and gallery
+        
+        updateProgressCircle();
+        if (isExpired()) {
+          showFinalScreen();
+          return;
+        }
+        
+        updateNumbersAndMaybeFinal();
+        timerInterval = setInterval(() => {
+          if (isExpired()) {
+            if (timerInterval) clearInterval(timerInterval);
+            if (rotationInterval) clearInterval(rotationInterval);
+            showFinalScreen();
+          } else {
+            updateNumbersAndMaybeFinal();
+            updateProgressCircle();
+          }
+        }, 1000);
+        
+        // ensure rotation is active (in case fetchClassData didn't start due to empty but fallback exists)
+        if (!rotationInterval && allMembers.length) startRotation();
+      }
+      
+      init();
+    })();
+  </script>
+</body>
+
+</html>
