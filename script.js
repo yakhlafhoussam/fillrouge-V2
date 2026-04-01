@@ -38,6 +38,26 @@
     let timerInterval = null;
     let currentSelectedClass = '';
 
+    // Custom name mapping function
+    function formatDisplayName(name) {
+        if (!name) return name;
+        // Change "Houssam Yakhlaf" to "Houssam YK"
+        if (name === "Houssam Yakhlaf" || name.includes("Houssam Yakhlaf")) {
+            return "Houssam YK";
+        }
+        return name;
+    }
+
+    // Custom photo URL mapping
+    function getCustomPhotoUrl(name, defaultPhotoUrl) {
+        if (!name) return defaultPhotoUrl;
+        // Saad Haimeur custom photo
+        if (name === "Saad HAIMEUR" || name === "Saad Haimeur") {
+            return "https://media.licdn.com/dms/image/v2/D4E03AQHg8vsMEiI6Fw/profile-displayphoto-crop_800_800/B4EZgof51cGwAM-/0/1753026111079?e=1775692800&v=beta&t=9-B1jmrV-5jhrzBBacM6th8IgCA7FT-QdIKY8C5Bdy0";
+        }
+        return defaultPhotoUrl;
+    }
+
     function buildPhotoUrl(photoPath) {
         if (!photoPath) return null;
         if (photoPath.startsWith('http://') || photoPath.startsWith('https://') || photoPath.startsWith('//')) {
@@ -83,10 +103,10 @@
             console.error("Error fetching classes:", err);
             classBadgeSpan.innerHTML = `⚠️ Using demo classes`;
 
-            // Fallback classes
+            // Fallback classes with updated data
             allClasses = [
                 { name: "GryffindorElites", studentCount: 17, image: "https://intranet.youcode.ma/storage/classrooms/146-1759851626.jpg", staff: [{ name: "Mohamed Yassine Bahajou", photo: "28-1665941748.jpg" }] },
-                { name: "DebuGGers", studentCount: 23, image: "https://intranet.youcode.ma/storage/classrooms/0.jpeg", staff: [{ name: "Saad HAIMEUR", photo: null }] },
+                { name: "DebuGGers", studentCount: 24, image: "https://intranet.youcode.ma/storage/classrooms/0.jpeg", staff: [{ name: "Saad HAIMEUR", photo: null }] },
                 { name: "GenZDevs", studentCount: 23, image: "https://intranet.youcode.ma/storage/classrooms/151-1770624273.jpg", staff: [{ name: "Abdeladim Abid", photo: "16-1773227461.png" }] },
                 { name: "NextLine 2025-2026", studentCount: 24, image: "https://intranet.youcode.ma/storage/classrooms/0.jpeg", staff: [{ name: "Achraf Chaoub", photo: "34-1669653739.jpg" }] },
                 { name: "SaiyansCoders", studentCount: 22, image: "https://intranet.youcode.ma/storage/classrooms/147-1759924167.png", staff: [{ name: "Houssni OUCHAD", photo: "1008-1709580550.jpg" }] }
@@ -181,21 +201,21 @@
         const levelName = classInfo.level?.name || "1st Year";
         classBadgeSpan.innerHTML = `${className} · ${campusName} · ${levelName}`;
 
-        // Process STUDENTS
+        // Process STUDENTS with name formatting
         const rawStudents = classInfo.students || [];
         const studentsList = rawStudents.map(s => ({
-            name: s.name || "Anonymous",
-            photoUrl: s.photo ? buildPhotoUrl(s.photo) : null,
+            name: formatDisplayName(s.name || "Anonymous"),
+            photoUrl: getCustomPhotoUrl(s.name, s.photo ? buildPhotoUrl(s.photo) : null),
             points: s.points !== undefined && s.points !== null ? s.points : 0,
             role: "student",
             pointsVariation: s.pointsVariation || 0
         }));
 
-        // Process STAFF
+        // Process STAFF with name formatting and custom photo
         const rawStaff = classInfo.staff || [];
         const staffList = rawStaff.map(st => ({
-            name: st.name || "Staff Member",
-            photoUrl: st.photo ? buildPhotoUrl(st.photo) : null,
+            name: formatDisplayName(st.name || "Staff Member"),
+            photoUrl: getCustomPhotoUrl(st.name, st.photo ? buildPhotoUrl(st.photo) : null),
             points: st.points !== undefined && st.points !== null ? st.points : null,
             role: "staff",
             pointsVariation: st.pointsVariation || 0
@@ -203,11 +223,24 @@
 
         currentMembers = [...staffList, ...studentsList];
 
+        // Add Abdelaziz Ait Hassain to DebuGGers class
+        if (className === "DebuGGers" || className === "DebuGGers" || className.toLowerCase().includes("debug")) {
+            currentMembers.push({
+                name: "Abdelaziz Ait Hassain",
+                photoUrl: "https://intranet.youcode.ma/storage/users/profile/31-1665940793.jpg",
+                points: 0,
+                role: "student",
+                pointsVariation: 0
+            });
+        }
+
         if (currentMembers.length === 0) {
             currentMembers = [{ name: "No members found", photoUrl: null, points: 0, role: "student" }];
         }
 
-        memberCountSpan.innerText = `${currentMembers.length} members (${staffList.length} staff, ${studentsList.length} students)`;
+        const staffCount = currentMembers.filter(m => m.role === "staff").length;
+        const studentCount = currentMembers.filter(m => m.role === "student").length;
+        memberCountSpan.innerText = `${currentMembers.length} members (${staffCount} staff, ${studentCount} students)`;
 
         buildGalleryFromMembers();
         startRotation();
@@ -220,10 +253,12 @@
                 { name: "Khadija Abirat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1519-1760996184.png", points: 447, role: "student" },
                 { name: "Yassin Maftah", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1877-1760996507.png", points: 438, role: "student" },
                 { name: "Zakarya Hari", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1684-1760996356.png", points: 434, role: "student" },
-                { name: "Nourelhouda Tajat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1680-1760996352.png", points: 411, role: "student" }
+                { name: "Nourelhouda Tajat", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1680-1760996352.png", points: 411, role: "student" },
+                { name: "Houssam YK", photoUrl: "https://intranet.youcode.ma/storage/users/profile/1720-1760996396.png", points: 250, role: "student" }
             ],
             "DebuGGers": [
-                { name: "Saad HAIMEUR", photoUrl: null, points: null, role: "staff" }
+                { name: "Saad HAIMEUR", photoUrl: "https://media.licdn.com/dms/image/v2/D4E03AQHg8vsMEiI6Fw/profile-displayphoto-crop_800_800/B4EZgof51cGwAM-/0/1753026111079?e=1775692800&v=beta&t=9-B1jmrV-5jhrzBBacM6th8IgCA7FT-QdIKY8C5Bdy0", points: null, role: "staff" },
+                { name: "Abdelaziz Ait Hassain", photoUrl: "https://intranet.youcode.ma/storage/users/profile/31-1665940793.jpg", points: 320, role: "student" }
             ],
             "GenZDevs": [
                 { name: "Abdeladim Abid", photoUrl: "https://intranet.youcode.ma/storage/users/profile/16-1773227461.png", points: null, role: "staff" }
@@ -234,7 +269,9 @@
             { name: className, photoUrl: null, points: 0, role: "student" }
         ];
 
-        memberCountSpan.innerText = `${currentMembers.length} members`;
+        const staffCount = currentMembers.filter(m => m.role === "staff").length;
+        const studentCount = currentMembers.filter(m => m.role === "student").length;
+        memberCountSpan.innerText = `${currentMembers.length} members (${staffCount} staff, ${studentCount} students)`;
         classBadgeSpan.innerHTML = `${className} · Demo Mode`;
 
         buildGalleryFromMembers();
@@ -335,7 +372,6 @@
         galleryScreen.classList.add('hidden');
         backToClassesBtn.classList.add('hidden');
         finalUI.classList.add('hidden');
-        mainDiv.classList.remove('hidden');
         classBadgeSpan.innerHTML = `📚 ${allClasses.length} Classes · Safi Campus`;
         classFooterSpan.innerText = "Select a class";
         memberCountSpan.innerText = "0 members";
